@@ -14,8 +14,11 @@ ost.df
 
 sort(ost.df$weight)
 
+# 이상치 확인 및 제거 
 
-# 이상치 제거 때 참고 ost.df <- ost.df[!(weight <= 240 ),] 
+# boxplot.stats(ost.df$weight)$out
+# ost.df[!(ost.df$weight <= 242),]
+
 
 
 # 02.기본통계치 확인: describe(psych패키지 이용)
