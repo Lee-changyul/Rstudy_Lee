@@ -183,20 +183,17 @@ abline(v=x, col="green", lty=3)
 
 
 
-# install.packages("nparcomp")
-library(nparcomp)
-result = mctp(owa.df$score ~ owa.df$group, 
-              data=owa.df)
-summary(result)
-
-
 # 부록: 비모수통계분석 Kruskal Wallis H test 
 kruskal.test(owa.df$score ~ owa.df$group, 
              data=owa.df)
-install.packages("userfriendlyscience")
+# install.packages("userfriendlyscience")
 library(userfriendlyscience)
 posthocTGH(owa.df$score, 
            owa.df$group)
 
 
-
+# install.packages("nparcomp")  # 비모수 검정에서 다중 비교 방식 
+library(nparcomp)
+result = mctp(owa.df$score ~ owa.df$group, 
+              data=owa.df)
+summary(result)
