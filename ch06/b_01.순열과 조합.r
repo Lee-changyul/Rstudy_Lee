@@ -34,7 +34,7 @@ choose(45,6)
 
 # 1등 당첨확률
 # 지수표기법 환원 1.2e+10->0.00000000012
-options("scipen" = 20)
+options("scipen" = 20) # 통계치 유의확률 0.05
 lot <- choose(45,6)
 1/lot
 

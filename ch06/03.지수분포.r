@@ -25,9 +25,9 @@ plot(x,
 
 # 그래프의 의미 : 대기시간이 x에 도달 했을 때까지 전화를 못받을 확률을 알아보는 것. 
 
-abline(v=0.2,  # 그래프에 선을 그려주는 함수. h= 가로선이 그려짐
+abline(h=0.2,  # 그래프에 선을 그려주는 함수. h= 가로선이 그려짐
        col="red", 
-       lty=3) # line 유형 
+       lty=1) # line 유형 
  
 # 10분에 평균 2회 전화, 3분 이내에 전화를 받을 확률 P(X<=3/10) 이하의 개념 이므로 lower.tail = TRUE
 pexp(q=3/10, rate=2, lower.tail = TRUE)

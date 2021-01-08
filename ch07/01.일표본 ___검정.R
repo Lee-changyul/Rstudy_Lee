@@ -1,3 +1,6 @@
+## T-검정 (차이검정) : 일표본, 독립표본, 대응표본
+
+
 #### 일표본(One Sample) t-test #####
 
 # 01.데이터 불러오기 
@@ -17,9 +20,9 @@ sort(ost.df$weight)
 # 이상치 확인 및 제거 
 
 # boxplot.stats(ost.df$weight)$out
-# ost.df[!(ost.df$weight <= 242),]
+# ost.df <- data.frame(ost.df[!(ost.df$weight <= 242),])
 
-
+ost.df
 
 # 02.기본통계치 확인: describe(psych패키지 이용)
 attach(ost.df) # 객체연결 (attach  -> detach)
@@ -38,8 +41,10 @@ hist(weight,
      main="아이스크림 무게에 대한 히스토그램 및 정규분포") 
 par(opar)
 
+
+
 # 04.통계분석
-# two-sided test: alternative = c("two.sided") 같다(이다, 아니다)의 경우 - 보통 이것을 만이 활용한다. 
+# two-sided test: alternative = c("two.sided") 같다(이다, 아니다)의 경우 - 보통 이것을 많이 활용한다. 
 # right-sided test: alternative = c("greater") 크다 검증일 경우 검증
 # left-sided test: alternative = c("less") 작다 검증일 경우
 options("scipen" = 20) #지수 표기법 수정 / 소수점 20자리까지는 그냥 풀어주어라. : 2.2e-4=0.00022
