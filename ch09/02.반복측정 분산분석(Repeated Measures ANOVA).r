@@ -70,7 +70,7 @@ rma.result <- aov(score ~ time+Error(id/time),
                   data=rma.df)
 summary(rma.result)
 
-
+options("scipen" = 20)
 
 
 

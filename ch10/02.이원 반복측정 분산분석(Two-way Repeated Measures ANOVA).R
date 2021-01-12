@@ -16,6 +16,8 @@ twrma.df$time <- factor(twrma.df$time,
                         labels=c("사전","사후"))
 str(twrma.df)
 
+head(twrma.df)
+
 # [참고] 롱테일 그래프 
 
 library(tidyr)

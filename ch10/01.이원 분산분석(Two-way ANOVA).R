@@ -12,7 +12,7 @@ twa.df$temp <- factor(twa.df$temp,
                        labels=c("200도","300도"))
 str(twa.df)
 
-
+head(twa.df)
 
 
 
@@ -41,7 +41,7 @@ boxplot(taste ~ meth*temp, data=twa.df) # 두개를 보여주는 방법 * 기호
 library(ggplot2)
 ggplot(twa.df, aes(x = temp, y = taste)) + 
   geom_boxplot(outlier.colour="red") +
-  facet_wrap(~meth) +
+  facet_wrap(~meth) + # 그룹을 나누어 주라는 이야기 
   ggtitle("방법*온도에 따른 맛")
 
 
@@ -66,7 +66,8 @@ options("scipen" = 20)
 
 #상호작용효과 그래프
 interaction.plot(twa.df$meth, twa.df$temp, twa.df$taste)
-                 
+interaction.plot(twa.df$temp, twa.df$meth, twa.df$taste)
+
 # 그래프 순서에 유의, 독립변수가 먼저 오고 종속변수가 나중에 옴 (방법/온도 - 맛)
 # x축과 y축을 목적에 따라 지정하면 됨
 
@@ -77,7 +78,7 @@ interaction.plot(twa.df$meth, twa.df$temp, twa.df$taste)
 
 
 # 상호작용이 있을 경우 : 그룹별로 나누어서 분석
-tw1 <- twa.df[twa.df$meth=="오븐",]  # 방법을 먼저 쪼개로 온도에 따른 차이가 있는지를 보도록하겠다. 
+tw1 <- twa.df[twa.df$meth=="오븐",]  # 방법을 먼저 쪼개고 온도에 따른 차이가 있는지를 보도록하겠다. 
 tw2 <- twa.df[twa.df$meth=="기름",]
 
 t.test(taste ~ temp, 

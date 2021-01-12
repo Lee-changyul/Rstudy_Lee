@@ -15,7 +15,7 @@ twrma.df <- read.csv("Ch1004.호흡과 뇌파.csv",
                      header=TRUE, 
                      na.strings = ".")
 twrma.df$sex <- factor(twrma.df$sex,
-                         levels=c(1,2),
+                         levels=c(1:2),
                          labels=c("남자","여자"))
 twrma.df$breath <- factor(twrma.df$breath,
                         levels=c(1:3),
@@ -61,7 +61,7 @@ ggtitle("성별에 따른 호흡의 뇌파변화") +
 # 04.통계분석
 
 # 구형성(sphericity)검정: Mauchly’s test.
-# 본 예제는 변수가 2개 이기 때문에 구형성 검정 없음
+# 본 예제는 종속변수가 3개 이기 때문에 구형성 검정 해야함
 require(car)
 twrma.matrix <- cbind(twrma.df$ch1al[twrma.df$breath=="1:1"], 
                       twrma.df$ch1al[twrma.df$breath=="7:3"],
@@ -80,13 +80,12 @@ summary(twrma.result.mt, multivariate=T)
 
 
 
-
-# ANOVA 검정 (방법1=방법2)
+# ANOVA 검정 (방법1=방법2) 구형성 검증결과에서 interaction effect 를 확인하고 없으면 빼주어야 한다. 
 twrma.result <- aov(ch1al ~ breath*sex + Error(id), data=twrma.df)
-summary(twrma.result)
+summary(twrma.result) 
 
 twrma.result <- aov(ch1al ~ breath + sex, data=twrma.df) 
-summary(twrma.result)
+summary(twrma.result) # 여기서는 이것을 활용한다. 
 
 
 

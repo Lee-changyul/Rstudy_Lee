@@ -55,7 +55,7 @@ library(ggplot2)
 ggplot(edu.df, aes(x = 학년, y = 비교과운영)) + 
   geom_boxplot(outlier.colour="red") +
   facet_wrap(~학부) +
-  ggtitle("방법*온도에 따른 맛")
+  ggtitle("학년*학부에 따른 점수")
 
 
 
@@ -78,3 +78,10 @@ summary(twa.result)
 
 #상호작용효과 그래프
 interaction.plot(edu.df$학부, edu.df$학년, edu.df$비교과운영)
+
+
+# 사후검정 : 그룹이 3개 이상이므로 
+
+TukeyHSD(twa.result)
+tukeyPlot <- TukeyHSD(twa.result)
+plot(tukeyPlot)
