@@ -5,7 +5,7 @@ lreg.df <- read.csv("Ch1104.로지스틱회귀분석(LREG).csv",
                      header=TRUE, 
                      na.strings = ".")
 lreg.df$exp <- factor(lreg.df$exp,
-                       levels=c(0,1),
+                       levels=c(0:1),
                        labels=c("No","Yes"))
 lreg.df$chun <- factor(lreg.df$chun,
                           levels=c(0:1),
@@ -42,3 +42,5 @@ odds <- data.frame(summary(lreg.model)$coefficients,
                    odds = exp(coef(lreg.model))) 
 round(odds, 5)
 
+# 오즈비 해석 1을 기준으로 조직몰입도가 1단위 증가하면 이직의도는 0.547배 증가한다. 
+# => 다른 표현으로는 이직의도가 45.3% 감소한다. (1-0.547)

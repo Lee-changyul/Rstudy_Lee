@@ -48,9 +48,9 @@ library(ggplot2)
 ggplot(twrma.df, 
        aes(x = sex, y = ch1al)) + 
   geom_boxplot(outlier.colour="red") +
-  facet_wrap(~breath)
-ggtitle("성별에 따른 호흡의 뇌파변화") +
-  theme_classic() + # ggplot2 테마
+  facet_wrap(~breath) +
+  ggtitle("성별에 따른 호흡의 뇌파변화") +
+  theme_classic()  # ggplot2 테마
   
   
   

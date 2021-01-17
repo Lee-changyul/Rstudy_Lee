@@ -28,7 +28,7 @@ precro.table <- table(precro.df$group,
 precro.result <- CrossTable(precro.table,
                            expected=TRUE,
                            chisq=TRUE,
-                           asresid=F)
+                           asresid=T)
 
 
 
@@ -45,7 +45,7 @@ precro.result$chisq$stdres
 
 
 
-#04.상대위험율 계산
+#04.상대위험율 계산 
 # 비타민은 복용하면 감기에 안걸릴 확률이 
 # 그렇지 않은 사람에 비해 2.57배 높게 나타남
 # 감기에 비타민을 먹은 사람이 안먹은 사람에 비하여 

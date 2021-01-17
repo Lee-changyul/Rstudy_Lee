@@ -1,11 +1,13 @@
 #### 요인분석 #####
 
 # 01.데이터 불러오기 
-faData <- read.csv("./data/09.fa.csv", 
+faData <- read.csv("09.fa.csv", 
                     header=TRUE, 
                     na.strings = "."
 )
 str(faData)
+
+head(faData)
 
 # 02.기본통계치 확인: describe(psych패키지 이용)
 library(psych)
@@ -14,9 +16,23 @@ names(faData)
 
 # 03.요인분석
 # 1차 요인분석 : 요인갯수 확인하기
-faResult <- principal(faData[,c(2:17)], rotate="varimax")
-faResult$values
+
+
+faResult <- principal(faData[,c(2:17)], rotate="varimax") # 아이겐 값을 통해서 필요한 요인 수 추출 
 plot(faResult$values, type="b", sub = "Scree Plot")
+
+print(faResult$values >= 1)
+
+sum(as.numeric(faResult$values >= 1))
+
+sum(faResult$values >= 1) # True 값이 1을 가지고 있어서 이렇게 해도 나온다. 
+
+# 요인적채치 1이상이 항목만 추출하고 싶다. 
+
+
+plot(faResult$values, type="b", sub = "Scree Plot")
+
+
 
 ### plot(type)
 ###값	설명
@@ -33,9 +49,9 @@ plot(faResult$values, type="b", sub = "Scree Plot")
 faResult <- principal(faData[,c(2:17)], nfactors = 5, rotate="varimax")
 print(faResult, digits=3, cutoff=.3, sort=TRUE)
 
-# 3차 요인분석 : 요인적재량 재거 (C4, fb4) 및 요인값 저장
+# 3차 요인분석 : 요인적재량 재거 (C4, fb3) 및 요인값 저장
 faResult <- principal(faData[,c(2:5,7:16)], nfactors = 5, rotate="varimax", scores=T)
-print(faResult, digits=3, cutoff=.3, sort=TRUE)
+print(faResult, digits=3, cutoff=.3, sort=T)
 faResult$scores
 
 # 종속변수 요인분석
@@ -64,7 +80,7 @@ save(faResultData, file="./faResultData.RData")
 load(file="./faResultData.RData")
 
 
-# 부록 : 최우추정법(maximum likelihood method) 사용
+# 부록 : 최우추정법(maximum likelihood method) 사용 오블리민 
 faResult <- factanal(faData[,c(2:16)], 
                      factors = 5, rotation = "varimax", 
                      scores="regression")

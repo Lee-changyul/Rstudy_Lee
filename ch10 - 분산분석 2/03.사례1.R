@@ -25,8 +25,7 @@ edu.df$학년 <- factor(edu.df$학년,
 
 str(edu.df)
 
-
-
+head(edu.df)
 
 
 

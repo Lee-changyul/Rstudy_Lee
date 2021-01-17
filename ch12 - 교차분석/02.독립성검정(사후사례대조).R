@@ -56,6 +56,8 @@ postcro.result$chisq$stdres
 # 04.오즈비(odds ratio)
 # 위험요인과 질병 발생간의 연관성을 1을 기준으로 나타낸 척도
 # 흡연을 하면 폐암에 걸릴 확률이 몇 배나 높아질 것인지?
+# 담배를 피는 사람(흡연자)가 암에 걸릴 확률 / 담배를 피지 않는 사람(비흡연자)이 암에 걸릴 확률
+
 odds.smok <- 504/27784
 odds.norm <- 723/170867
 odds.smok/odds.norm
