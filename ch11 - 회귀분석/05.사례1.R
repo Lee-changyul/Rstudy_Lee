@@ -11,6 +11,7 @@ corr.df <- read.csv("Ch1105.호흡과 뇌파.csv",
                     na.strings = ".")
 str(corr.df)
 
+head(corr.df)
 
 
 
@@ -35,6 +36,8 @@ cor.df.r <- cor(corr.df, use="complete.obs", method=c("pearson"))
 head(cor.df.r)
 
  # 상관관계 및 p-value 한번에 알아보기 Hmisc 패키지 사용하기 
+
+# install.packages("Hmisc")
 
 Hmisc::rcorr(as.matrix(corr.df), type="pearson") 
 
@@ -96,4 +99,5 @@ for(i in 1:l)
   }
 }
 result # 이데이터에서 "" 를 없애고 다시 저장하려면 어떻게 해야 할까?
+
 

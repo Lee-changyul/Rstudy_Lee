@@ -79,6 +79,7 @@ assignments <-
   kclusts %>% 
   unnest(cols = c(augmented))
 
+
 clusterings <- 
   kclusts %>%
   unnest(cols = c(glanced))
@@ -112,8 +113,8 @@ ggplot(assignments,
 set.seed(123)
 
 kclust_best <- 
-  kmeans(utilities_tb, 
-         centers = 3)
+  kmeans(utilities_tb, # center에 군집수를 지정했을 때 요약문을 제시해라.  
+         centers = 5)
 
 # 군집분석 결과 확인
 
