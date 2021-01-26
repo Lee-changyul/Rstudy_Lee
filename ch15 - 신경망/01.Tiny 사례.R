@@ -37,7 +37,7 @@ head(tiny.df)
 # 훈련용, 검증용 데이터 분리는 pass
 # 03.인공신경망 실행
 # help(neuralnet)
-# neuralnet(formula             : 출력변수 ~ 입력변수
+# neuralnet(formula             : 출력변수(종속변수) ~ 입력변수(독립변수)
 #          data                 :
 #          hidden = 1           : hidden layer(hl)와 노드수 (2,3) hl1=2, hl2=3개 노드, 
                                   # 첫번째 히든 레이어에 2개 노드, 두번째 히든레이어에 3개 노드 
@@ -52,7 +52,7 @@ set.seed(1)
 nn <- neuralnet(Like + Dislike ~ Salt + Fat,
                 data = tiny.df, 
                 linear.output = F, # 범주형이니 선이 없다. 
-                hidden = 3) # 히든 레이어 1개에 노드 3개 지정해라 
+                hidden = 3) # 히든 레이어 1개에 노드 3개 지정해라 c(2,3), c(4,2)
 
 
 
