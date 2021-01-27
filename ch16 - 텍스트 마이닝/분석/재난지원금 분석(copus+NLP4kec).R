@@ -17,128 +17,19 @@ library(tidytext)
 
 # 0. 사용데이터 정렬 ####
 
-# 데이터 불러오기 
-
 texts <- read.csv(".//raw_data//finaldata.csv", header = T)
-
-head(texts)
-
-text.df <- tibble(texts)
-
-text.df
-
-unnest_tokens(tbl=, output=, input=)
-# tbl=데이터프레임 (토큰단위로 분해해서 한행에 한개씩 저장)
-# output= 분해한 토큰을 저장할 새로운 열이름
-# input= 분해할 텍스트가 저장된 열이름
-text.df
-
-text.df <- unnest_tokens(text.df, word, 키워드)
-
-text.df$word
-
-# 33개 행 = 전체 단어 개수
-
-
-
-
-# NA(결측값)이 포함된 데이터 제거하기 
-
-texts <- texts[complete.cases(texts), ]
-nrow(x = texts)
-
-# 중복된 행이 있을 경우 제거
-
-texts <- unique(x = texts)
-nrow(x = texts)
-
-# 데이터 원본과 나중에 생성할 DTM을 서로 결합할 때 기준변수로 사용할 id 컬럼을 생성합니다.
-
-# 객체에 id를 추가하는 함수를 생성합니다.
-
-generateIDs <- function(obj, index = 'id') {
-  
-  # 객체의 종류에 따라 길이를 계산합니다. 
-  if (obj %>% class() == 'data.frame') {
-    n <- nrow(x = obj)
-  } else {
-    n <- length(x = obj)
-  }
-  
-  # id를 생성합니다. 
-  id <- str_c(
-    index, 
-    str_pad(
-      string = 1:n, 
-      width = ceiling(x = log10(x = n)), 
-      side = 'left', 
-      pad = '0') )
-  
-  # 결과를 반환합니다. 
-  return(id)
-}
-
-# texts 객체에 id 컬럼을 추가합니다. doc 대신에 다른 이름을 써도 괜찮다. 
-texts$id <- generateIDs(obj = texts, index = 'doc')
-
-head(texts)
-
-
-# 여기서 두가지 방식으로 데이터 전처리를 수행할 수 있다. 
-
-# 1) 문장을 다 합친 후에 재정리하는 방법
-# 2) 어느 정도 정돈된 데이터를 입력하고 이를 토대로 정리하는 방법 
-
-# => 아래에서는 먼저 기존 어느 정도 정돈된 데이터가 있으므로 두번째 방법을 사용해 본다. 
-
-
-# 다음에 논의할 내용은 
-
-# 1) 모든 데이터를 다 쓸 것인가?
-# 2) 일부 데이터를 걸러낼 것인가? 길이에 따라 가중치가 결정되므로 골라 내는 것도 방법 
-  # => 이 경우 텍스트 길이 확인하는 법
-
-# 열이름 확인
 
 dimnames(texts)
 
-# 쉽게 바꿀 수 있는 팁은?
-
-names(texts)[names(texts)=="일자"]="date"
-names(texts)[names(texts)=="인용문"]="cites"
 names(texts)[names(texts)=="키워드"]="content"
 
 names(texts)
 
-# 각 행(컬럼) 글자수 확인
-
-textRange <- texts$content %>% nchar() %>% range()
-print(x = textRange)
-
-
-
-# 1. 형태소 분석 및 전처리 : NLP4kec 활용 
-
-
-# texts = file_parser_r(path = "./raw_data/speech.xlsx", language = "ko", useEn = F, korDicPath = "./dictionary/user_dictionary.txt")
-# 이번 데이터는 기본적으로 excel 에서 기초 전처리 작업을 하고 왔기 때문에 이 과정 생략
+# 1. 형태소 분석 및 전처리 : NLP4kec 활용 (패키지 활용법은 생략)
 
 parsed <- texts$content
 
-texts$content[1:10]
-
-# 글자수 확인 
-
-parsed %>% nchar() %>% table()
-
-# 중복되는 것은 없는지 확인하고 중복 값 제거 (내용이 같은 것을 제거해 주는 것인지 추후 검증 필요)
-
-duplicated(x = parsed) %>% sum()
-
-parsed <- unique(x = parsed)
-
-length(parsed)
-
+parsed[1:10]
 
 # 말뭉치 생성 : tm::VCorpus()
 # 다양한 소스로부터 읽어들인 텍스트를 코퍼스 형식으로 변환해주는 함수
@@ -158,113 +49,30 @@ corp <- VCorpus(VectorSource(parsed)) # 아래 참고) 참조
 
 print(corp)
 
-# 첫 번째 결과를 출력하여 확인합니다. 
-
 str(object = corp[[1]])
 
 
-# 사전 만들어서 내용 합치기 : N-gram 활용 (여기서는 원리만 확인하고, 동의어 사전으로 대체하여 편성)
-
-# 필요한 패키지를 불러옵니다. 
-library(RWeka)
-
-
-# 인접한 2개의 단어를 결합한 bigram을 생성합니다. 
-# min과 max에 할당할 숫자를 바꾸면 원하는 N-gram을 만들 수 있습니다. 
-bigram <- function(x) {
-  NGramTokenizer(x = x, control = Weka_control(min = 2, max = 4))
-}
-
-# 단어문서행렬(Term-Document matrix)을 생성합니다. 
-
-bigramList <- corp %>% 
-  TermDocumentMatrix(control = list(tokenize = bigram)) %>% 
-  apply(MARGIN = 1, FUN = sum) %>% 
-  sort(decreasing = TRUE)
-
-# bigram의 길이를 확인합니다. 
-
-length(bigramList)
-
-# 문서 개수의 1% 이상 발생하는 bigram만 남깁니다. 
-
-# 빈도수가 작은 것은 굳이 관심을 가지지 않아도 됩니다. 
-
-bigramList <- bigramList[bigramList >= (nrow(x = texts) * 0.01)]
-length(x = bigramList)
-
-
-# bigram의 컬럼명(글자)만 따로 추출하여 bigramNames에 할당합니다. 
-bigramNames <- names(bigramList)
-
-# bigramNames을 육안으로 확인하기 위해 최대 100개까지 출력합니다. 
-top <- if (length(x = bigramNames) >= 100) bigramNames[1:100] else bigramNames
-print(top)
-
-# 텍스트로 저장하고 텍스트에서 편집.
-
-write.table(
-  x = top, 
-  quote = FALSE, 
-  file = './dictionary/spacing.txt', 
-  row.names = FALSE, 
-  col.names = FALSE)
-
 # 데이터 전처리 중 동의어 / 불용어 사전 불러오기
 
-stopWordDic <- read.csv("./dictionary/stopword_ko.csv") #.는 여러분의 작업디렉토리를 의미함
-synonymDic <- read.csv("./dictionary/synonym.csv")
+stopWordDic <- read.csv("./dictionary/stopword_ko.csv") 
 
+# 동의어 처리방법 
 
-# 동의어 처리
-for (i in 1:nrow(synonymDic)){
-  targetDocIdx = which(ll <- grepl(synonymDic$originWord[i], texts$content))
-  for(j in 1:length(targetDocIdx)){
-    docNum = targetDocIdx[j]
-    texts$content[docNum] = gsub(synonymDic$originWord[i], synonymDic$changeWord[i], texts$content[docNum])
-  }
-}
-
-
-
-## 단어간 스페이스를 하나 더 추가하는 것으로 NLP4kec 패키지의 알고리즘상 필요한 과정으로 특별한 의미는 없다. gsub()함수의 사용 예를 보면 gsub("한국어", "한글", data)이란 코딩은 data 파일에서 한국어를 한글로 교체하라는 의미이다.
-texts <- gsub(" ","  ",texts)
-
-
-## 여기까지 기본 전처리 방법 1 습득
+# 이방식 실패 
 
 # 코퍼스 처리를 위한 tm 패키지 로딩 후 이어서 데이터 전처리 완료 
 
-#install.packages("tm") #텍스트 마이닝을 위한 패키지
 library(tm)
 
-
-#특수문자 제거: 예를 들어 @, #, $ 등의 문자를 제거함
 corp <- tm_map(corp, removePunctuation)
-
-#숫자 삭제
 corp <- tm_map(corp, removeNumbers)
-
-#소문자로 변경: 영문의 경우 대문자를 소문자로 변경함: 영문을 사용하지 않기 때문에 해당사항 없음
-corp <- tm_map(corp, tolower)
-
-#특정 단어 삭제: 불용어 사전을 활용하여 해당 문자를 데이터에서 제거함
 corp <- tm_map(corp, removeWords, stopWordDic$stopword)
-
-# whitespace를 제거합니다.
 corp <- tm_map(x = corp, FUN = stripWhitespace)
-
 
 #텍스트문서 형식으로 변환
 corp <- tm_map(corp, PlainTextDocument)
 
 inspect(corp[[1]])
-
-# 문서번호를 새로운 컬럼에 만든 후 데이터 프레임으로 저장합니다.
-parsedDf <- data.frame(
-  id = generateIDs(obj = parsed, index = 'doc'),
-  parsedContent = parsed, 
-  corpusContent = sapply(X = corp, FUN = `[[`, 'content'))
 
 # 3. DTM 생성 및 Sparse Term 삭제 --
 
@@ -278,19 +86,13 @@ colnames(x = dtm) <- trimws(x = colnames(x = dtm), which = 'both')
 dtm <- dtm[,nchar(colnames(dtm)) > 1]
 
 # 차원을 확인합니다.
-dim(x = dtm) # 2270개 행(문서)에서 5626 개 열(단어)로 구성
+dim(x = dtm) # 2270개 행(문서)에서 5798 개 열(단어)로 구성
 
 
 #참고) Term Document Matirx 생성 (DTM에서 행과 열만 바뀐 matrix)
 tdm <- TermDocumentMatrix(corp, control=list(wordLengths=c(2,Inf)))
 
-dtm$dimnames$Docs <- generateIDs(obj = dtm$dimnames$Docs, index = 'doc')
-
-dtm$dimnames$Docs[1:40]
-dtm$dimnames$Terms[1:40]
-
-
-
+dtm$dimnames$Terms[1:100]
 
 # dtm에 언급된 단어(term)별 빈도수를 생성합니다.
 wordsFreq <- dtm %>% as.matrix() %>% colSums()
@@ -300,27 +102,25 @@ length(x = wordsFreq)
 
 wordsFreq <- wordsFreq[order(wordsFreq, decreasing = TRUE)]
 
-# 단어 빈도를 막대그래프로 그리기 위해 데이터 프레임으로 변환한 다음 
-# 내림차순으로 정렬합니다.
+# 데이터 프레임으로 전환한 후 엑셀로 데이터 저장 
+
+library(xlsx)
+
 wordDf <- data.frame(
   word = names(x = wordsFreq),
   freq = wordsFreq,
   row.names = NULL) %>% 
   arrange(desc(x = freq))
 
-
-# 만든 단어를 엑셀로 저장해 봅니다. 
-
-# install.packages("xlsx")
-
-library(xlsx)
-
 write.xlsx(wordDf,                # R데이터명
            file=".//raw_data//wordDF.xlsx",  # 여기서는 기존의 엑셀 파일이라고 설정함
-           sheetName="new2", # 기존의 엑셀 파일에 new라는 시트에 데이터를 넣음
+           sheetName="new3", # 기존의 엑셀 파일에 new라는 시트에 데이터를 넣음
            col.names=TRUE,  # 변수이름을 그대로 사용
            row.names=FALSE,# 행이름은 사용하지 않음
            append=TRUE)      # 기존의 엑셀 파일이 있으면 그곳에 추가해서 저
+
+
+
 
 
 

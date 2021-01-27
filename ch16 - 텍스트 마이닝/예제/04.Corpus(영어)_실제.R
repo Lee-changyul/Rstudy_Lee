@@ -72,12 +72,22 @@ inspect(tfidf_tdm)
 dtm <- DocumentTermMatrix(corp)
 inspect(dtm)
 
+wordsFreq <- dtm %>% as.matrix() %>% colSums() %>% data.frame()
+
 
 tfidf_dtm <- DocumentTermMatrix(corp, 
                                 control = list(weighting=weightTfIdf))
 inspect(tfidf_dtm)
 
+wordsFreq1 <-tfidf_dtm %>% as.matrix() %>% colSums() %>% data.frame()
 
+wordfreq12 <- cbind(wordsFreq,wordsFreq1)
+
+library(writexl)
+
+write.csv(wordfreq12, ".\\sample.csv", 
+          col.names = T,
+          row.names = T)
 
 # 5.Word Cloud(단어 빈도수 계산)
 

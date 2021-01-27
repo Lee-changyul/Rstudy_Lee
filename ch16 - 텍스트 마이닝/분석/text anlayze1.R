@@ -101,8 +101,11 @@ print(x = textRange)
 
 texts$content <- texts$content %>% str_remove_all(pattern = '\\s+')
 
+texts$content
+
 parsed <- r_parser_r(contentVector = texts$content, language = 'ko')
 
+head(parsed)
 
 # 이번 데이터는 기본적으로 excel 에서 기초 전처리 작업을 하고 왔기 때문에 이 과정 생략
 
