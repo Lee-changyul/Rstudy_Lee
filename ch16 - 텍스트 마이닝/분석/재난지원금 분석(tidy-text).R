@@ -13,7 +13,6 @@ library(readxl)
 
 # 1. 데이터 읽기
 
-
 texts <- read_excel(".//raw_data//final.xlsx")
 
 head(texts)
@@ -53,7 +52,6 @@ str(st_word)
 texts <- texts %>%
   anti_join(st_word, by="word") %>%        # 불용어 추가 삭제
   filter(!grepl(pattern="\\d+", word)) # //d+ = 숫자의 정규표현식
-   
 
 print(texts, n=30)
 
