@@ -22,15 +22,14 @@ library("xlsx")
 save(list=ls(), file ="재난지원금.RData")
 load("재난지원금.RData")
 
-library(tidyverse)
-library(tidytext)
-library(tidymodels)
+
+pacman::p_load('tidymodels','tidytext', 'tidyverse', 'tm', 'network','GGally', 'sna', 'RColorBrewer')
+
+# install.packages("pacman")
+
 library(writexl)
-library(tm)
-
 # install.packages("readxl")
-install.packages("writexl")
-
+#install.packages("writexl")
 library(readxl)
 
 # 1. 데이터 읽기 ####
@@ -42,6 +41,8 @@ texts <- texts %>%
   filter(no != 1657)
 
 texts$word <- str_replace_all(texts$word, "재난지원금", "긴급재난지원금") 
+
+str(texts)
 
 library(xlsx)
 
@@ -59,11 +60,20 @@ t_freq <- texts %>%
   print(t_freq) %>% 
   ungroup()
 
+
 t_freq["Group"] <- ifelse(t_freq$date <= 20200317, "first", # 지급논의
                           ifelse(t_freq$date <= 20200331, "second", #1차추경
                                  ifelse(t_freq$date <= 20200415, "third", "fourth"))) # 총선이전 # 총선이후
 
+str(t_freq)
+
 write.xlsx(t_freq, ".//raw_data//word.xlsx")
+
+head(t_freq, 20)
+
+capture.output(head(t_freq, 20), 
+               file = ".//재난지원금.txt",
+               append = T) 
 
 
 # 1) 일반빈도 분석 
@@ -71,9 +81,9 @@ write.xlsx(t_freq, ".//raw_data//word.xlsx")
 
 t_freq %>% group_by(word) %>%  
   summarise(countwt = sum(tf_idf), count =sum(n)) %>% 
-  arrange(-count) %>%
-  head(20) %>% 
-  mutate(word = reorder(word, count)) %>%
+  arrange(-count) %>% # 빈도순으로 정렬하라, 
+  head(25) %>% 
+  mutate(word = reorder(word, count)) %>% # 그래프에서 단어를 다시 정렬해서 보기 좋게 만들어라. 
   ungroup() %>% 
   ggplot(aes(word, count)) +
   geom_col() +
@@ -134,6 +144,33 @@ t_freq %>% filter(Group == "first") %>%  group_by(word) %>%
   geom_text(aes(label=format(count), hjust = -0.4)) +
   coord_flip()
 
+
+my.freq.func <- function(data, group, freq=20, top=20){
+  
+data %>% 
+    filter(Group == group) %>%  group_by(word) %>%  
+    summarise(countwt = sum(tf_idf), count =sum(n)) %>% 
+    arrange(-count) %>%
+    filter(count > freq) %>%
+    head(top) %>% 
+    mutate(word = reorder(word, count))%>%
+    ungroup() %>% 
+    ggplot(aes(word, count)) +
+    geom_col() +
+    labs(x = "", y = "") +
+    geom_text(aes(label=format(count), hjust = -0.4)) +
+    coord_flip()  
+
+    ggsave(file=paste0(".//graph.", group, ".jpg"), width=12, height =6, units = "in") 
+         # directory, filename +  width=20, height=15, units=c("cm")) # width, height, units
+            
+}
+
+for(i in unique(t_freq$Group))
+  {my.freq.func(t_freq, i , 23 ,20)}
+
+
+# 잠시 묶어두자 ####
 
 t_freq %>% filter(Group == "first") %>% group_by(word) %>%  
   summarise(countwt = sum(tf_idf), count =sum(n)) %>% 
@@ -234,7 +271,7 @@ t_freq %>% filter(Group == "fourth") %>% group_by(word) %>%
   coord_flip()
 
 
-# 시기간에 그룹간 용어 등장에 차이가 있는가? 기간별 비교 그래프를 그려보자. 
+# 시기간에 그룹간 용어 등장에 차이가 있는가? 기간별 비교 그래프를 그려보자. ####
 # TDM 만들어서 비교하는 것 
 
 
@@ -315,7 +352,7 @@ pyramid.plot(common_words_25$third, common_words_25$fourth,
 corterm <- t_freq %>% cast_dtm(document=no, term=word, value=tf_idf) %>% 
   removeSparseTerms(0.99) 
 
-findAssocs(corterm,"포퓰리즘",0.1) # 특정단어랑 연관되는 상관관계 보기 
+findAssocs(corterm,"현금", 0.01) # 특정단어랑 연관되는 상관관계 보기 
 
 corTerms <- t_freq %>% cast_dtm(document=no, term=word, value=tf_idf) %>% 
   removeSparseTerms(0.99) %>% as.matrix() %>% cor() 
@@ -645,9 +682,14 @@ co %>% filter(item1 %in% c("이재명")) %>%
 
 library(igraph)
 library(ggraph)
+library(networkD3)
 
-co_graph <- co %>%
-  filter(n > 50) %>%
-  graph_from_data_frame() 
+co %>% filter(n > 50) %>% 
+  with(simpleNetwork(co,
+              zoom = TRUE,
+              fontSize = 15,
+              linkDistance = 75,
+              opacity = 0.9))
+
 
 write.csv(co, ".//co.csv")
