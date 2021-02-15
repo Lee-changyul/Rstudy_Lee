@@ -34,7 +34,7 @@ library(readxl)
 
 # 1. 데이터 읽기 ####
 
-texts <- read_excel(".//raw_data//final.xlsx")
+texts <- read_excel(".//raw_data//final.xlsx") # 만약 깨지면 오피스 2003 형식으로 저장 .xls 열림 
 
 texts <- texts %>% 
   select(-word1) %>% 
@@ -166,6 +166,11 @@ data %>%
             
 }
 
+
+my.freq.func(t_freq, "first", 20, 20)
+
+# 반복문을 통해서 한번에 해결 
+
 for(i in unique(t_freq$Group))
   {my.freq.func(t_freq, i , 23 ,20)}
 
@@ -279,6 +284,7 @@ t_freq1 <- t_freq %>% group_by(Group, word) %>%
   summarise(countwt = sum(tf_idf), count =sum(n)) %>% 
   ungroup()
 
+head(t_freq1)
 
 tdm_df <- t_freq1 %>%
   cast_tdm(term=word, document=Group, value=count) %>% 
@@ -307,7 +313,7 @@ common_words_25 <- tdm_df %>%
   arrange(desc(diff)) %>% slice(1:25) # 1행부터 20행까지 잘라서 프레임 자체에 넣는 방식 
 
 pyramid.plot(common_words_25$first, common_words_25$second,
-             labels = common_words_25$label, gap = 100,
+             labels = common_words_25$label, gap = 70,
              top.labels = c("지급논의", "Words", "1차추경"),
              main = "공통단어", laxlab = NULL, 
              raxlab = NULL, unit = NULL)
@@ -352,7 +358,7 @@ pyramid.plot(common_words_25$third, common_words_25$fourth,
 corterm <- t_freq %>% cast_dtm(document=no, term=word, value=tf_idf) %>% 
   removeSparseTerms(0.99) 
 
-findAssocs(corterm,"현금", 0.01) # 특정단어랑 연관되는 상관관계 보기 
+findAssocs(corterm,"재정건전성", 0.01) # 특정단어랑 연관되는 상관관계 보기 
 
 corTerms <- t_freq %>% cast_dtm(document=no, term=word, value=tf_idf) %>% 
   removeSparseTerms(0.99) %>% as.matrix() %>% cor() 
@@ -372,7 +378,7 @@ library(sna)
 #netTerms <- network(x = corTerms, directed = FALSE) # 기본 함수식
 # plot(netTerms, vertex.cex = 1)
 
-corTerms[corTerms <= 0.10] <- 0
+corTerms[corTerms <= 0.20] <- 0
 netTerms <- network(x = corTerms, directed = FALSE) # 네트워크에 방향성이 없음
 
 plot(netTerms, vertex.cex = 1)
@@ -399,7 +405,7 @@ ggnet2(
   size.min = 3,
   label = TRUE,
   label.size = 3,
-  node.size = sna::degree(dat = netTerms), # degree centraity 연결중심성(직접연결된 노드 수)을 중심으로 노드사이즈 선정  
+  node.size = sna::degree(dat = netTerms), # degree centrality 연결중심성(직접연결된 노드 수)을 중심으로 노드사이즈 선정  
   edge.size = 'edgeSize', # 엣지의 굵기를 상관관계에 따라 다르게 하기 
   family = 'AppleGothic')+
   theme(plot.title = element_text(hjust = 0.5, face = 'bold')
