@@ -115,8 +115,16 @@ barplot(gain$mean.resp/mean(price), names.arg = gain$depth,
 #### 정오행렬(confusion Matrix)(Table 5.5)
 library(caret)
 library(e1071)
+library(tidyverse)
 
-owner.df <- read.csv("ownerExample.csv")
+owner.df <- read_csv("ownerExample.csv", 
+                      col_names = TRUE,
+                      locale=locale('ko', encoding='euc-kr'),
+                      na=".") %>% # csv 데이터 읽어오기
+    mutate_if(is.character, as.factor)  
+  
+str(owner.df)
+
 confusionMatrix(as.factor(ifelse(owner.df$Probability>0.5, 'owner', 'nonowner')), 
                 owner.df$Class)
 confusionMatrix(as.factor(ifelse(owner.df$Probability>0.25, 'owner', 'nonowner')), 
@@ -137,8 +145,12 @@ confusionMatrix(as.factor(ifelse(owner.df$Probability>0.75, 'owner', 'nonowner')
 #### 컷오프 전체오차 (Figure 5.4)
 
 # replace data.frame with your own
-le.df <- read.csv("liftExample.csv")
 
+le.df <- read_csv("liftExample.csv", 
+                     col_names = TRUE,
+                     locale=locale('ko', encoding='euc-kr'),
+                     na=".") %>% # csv 데이터 읽어오기
+  mutate_if(is.character, as.factor)  
 
 # create empty accuracy table
 accT = c() 

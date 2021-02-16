@@ -23,8 +23,8 @@ bank.df <- read.csv("UniversalBank.csv",
 
 ## 02.전치리작업: 범주형 변수(factor)로 인식하게 변환
 bank.df$Personal.Loan <- factor(bank.df$Personal.Loan,
-                                levels=c(0,1),
-                                labels=c("No","Yes"))
+                                levels=c(1,0),
+                                labels=c("Yes","No"))
 # ID, 우편번호 제거
 bank.df <- bank.df[ , -c(1, 5)]  
 str(bank.df)
@@ -68,6 +68,10 @@ summary(default.ct)
 show(default.ct)
 
 
+library(rpart.plot)
+
+rpart.plot(default.ct,
+           extra =101)
 
 
 ##05.분류나무 그래프
@@ -104,9 +108,9 @@ length(deeper.ct$frame$var[deeper.ct$frame$var == "<leaf>"])
 #분류나무 그래프
 prp(deeper.ct, 
     type = 1, 
-    extra = 1, 
+    extra = 100, 
     under = TRUE, 
-    split.font = 1, 
+    split.font = 5, 
     varlen = -10, 
     box.col=ifelse(deeper.ct$frame$var == "<leaf>", 'gray', 'white'))  
 
@@ -176,7 +180,7 @@ pruned.ct <- prune(cv.ct,
                    cp = 0.0154639 )
 prp(pruned.ct, 
     type = 1, 
-    extra = 1, 
+    extra = 3, 
     under = TRUE, 
     split.font = 1, 
     varlen = -10, 
