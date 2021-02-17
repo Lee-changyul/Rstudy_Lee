@@ -21,10 +21,11 @@ bank.df <- read.csv("UniversalBank.csv",
 
 
 
+
 ## 02.전치리작업: 범주형 변수(factor)로 인식하게 변환
 bank.df$Personal.Loan <- factor(bank.df$Personal.Loan,
-                                levels=c(1,0),
-                                labels=c("Yes","No"))
+                                levels=c(0,1),
+                                labels=c("No","Yes"))
 # ID, 우편번호 제거
 bank.df <- bank.df[ , -c(1, 5)]  
 str(bank.df)
@@ -37,8 +38,12 @@ head(bank.df)
 set.seed(1) # 시드 고정 
 train.index <- sample(c(1:dim(bank.df)[1]), 
                       dim(bank.df)[1]*0.6)  
+
+train.indets.a <- sample(nrow(bank.df), nrow(bank.df)*0.6) 
+
 train.df <- bank.df[train.index, ]
 valid.df <- bank.df[-train.index, ]
+
 head(train.df)
 
 
@@ -114,7 +119,8 @@ prp(deeper.ct,
     varlen = -10, 
     box.col=ifelse(deeper.ct$frame$var == "<leaf>", 'gray', 'white'))  
 
-
+rpart.plot(deeper.ct,
+           extra =101)
 
 
 ## 07.정오행렬표를 이용한 모델검증: Table 9.3

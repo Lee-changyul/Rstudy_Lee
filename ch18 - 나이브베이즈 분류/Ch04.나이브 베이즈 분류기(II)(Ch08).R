@@ -53,8 +53,8 @@ delays.df %>%
 str(delays.df) # 데이터 구조확인
 
 
-#delays.df <- delays.df %>% 
-#  select(10, 1, 8, 4, 2, 13)
+delays.df <- delays.df %>% 
+  select(10, 1, 8, 4, 2, 13)
 
 #03.훈련용, 검증용 데이터 생성 ####
 
@@ -145,8 +145,9 @@ confusionMatrix(pred.class,
 
 str(df)
 
-confusionMatrix(as.factor(ifelse(df$delayed>0.5, 'delayed', 'ontime')), 
+confusionMatrix(as.factor(ifelse(df$delayed>0.2, 'delayed', 'ontime')), 
                 df$actual)
+
 
 
 
