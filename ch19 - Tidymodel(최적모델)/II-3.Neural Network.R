@@ -8,7 +8,7 @@ nnet_model <-
   mlp(
     hidden_units = tune(), 
     penalty = tune(), 
-    activation = "relu") %>%
+    activation = "relu") %>% # 탐색에서 많이 사용하는 방법
   set_engine("nnet") %>%
   set_mode("classification")
 

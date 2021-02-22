@@ -24,10 +24,12 @@ cores
 rf_model <-
   rand_forest(mtry = tune(), 
               min_n = tune(), 
+              # minimal node size 노드에 분류되는 최소 개수 - 노드 하나에 몇개의 데이터가 분류될 것인가?  
               trees = 100) %>% 
   set_engine("ranger", 
              num.threads = cores,
-             importance = "impurity") %>% 
+             importance = "impurity") %>%  # 분석에서 변수의 중요도를 불순도를 기준으로 하라 (gini)
+            # 불순도를 낮추는 것을 중요하게 생각해서 모델을 만들어 보라. 
   set_mode("classification")
 
 
@@ -39,10 +41,11 @@ rf_model
 # m 5개 X tree_depth 5개 = 25세트
 
 rf_grid <- 
-  grid_regular(mtry(c(1L, 12L)), # L 부호는 정수형으로 데이터를 저장하도록 명령
+  grid_regular(mtry(c(1L, 11L)), # L 부호는 정수형으로 데이터를 저장하도록 명령
                min_n(),
                levels = 5)
-rf_grid
+
+rf_grid %>% print(n=25)
 
 
 # recipe 만들기
@@ -50,9 +53,8 @@ rf_grid
 # 필요없음
 
 rf_recipe <- 
-  recipe(Personal_Loan ~ ., data = train_data) %>%
-  step_dummy(all_nominal(), -all_outcomes())
-
+  recipe(Personal_Loan ~ ., data = train_data) 
+ 
 summary(rf_recipe)
 
 
